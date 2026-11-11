@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thử Thách 10 Câu Lý Thuyết Nhiệt - Vật Lý 12</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0d0f17; color: #f1f5f9; }
+        .glass-box { background: rgba(22, 27, 38, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-option { transition: all 0.2s ease; }
+        .btn-option:active { transform: scale(0.98); }
+        .btn-correct { background-color: #10b981 !important; border-color: #059669 !important; color: white !important; }
+        .btn-wrong { background-color: #ef4444 !important; border-color: #dc2626 !important; color: white !important; }
+        .btn-selected { border-color: #ec4899 !important; background-color: rgba(236, 72, 153, 0.2) !important; color: #f472b6 !important; }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4 flex justify-center items-center">
+
+    <div class="max-w-xl w-full space-y-6">
+        
+        <!-- Header -->
+        <div class="glass-box rounded-3xl p-6 text-center space-y-2 border-pink-500/30">
+            <span class="px-3 py-1 bg-pink-500/20 text-pink-400 text-xs font-bold rounded-full uppercase tracking-wider">Vật Lý 12 • Ôn Thi Học Kỳ 1</span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-400">
+                THỬ THÁCH 10 CÂU LÝ THUYẾT NHIỆT
+            </h1>
+            <p class="text-slate-400 text-xs sm:text-sm">90% học sinh trả lời sai ít nhất 3 câu! Hãy kiểm tra xem bạn được bao nhiêu điểm.</p>
+        </div>
+
+        <!-- Student Form -->
+        <div class="glass-box rounded-2xl p-5">
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Họ tên học sinh:</label>
+            <input type="text" id="studentName" placeholder="Nhập tên của em..." class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl outline-none focus:border-pink-500 text-sm">
+        </div>
+
+        <!-- Quiz List -->
+        <div id="quizContainer" class="space-y-4"></div>
+
+        <!-- Submit Section -->
+        <div class="glass-box rounded-2xl p-5 flex flex-col gap-4">
+            <div id="resultBox" class="hidden p-4 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 text-white font-bold text-center space-y-1">
+                <div id="resultScore" class="text-2xl"></div>
+                <div id="resultText" class="text-xs text-pink-100 font-normal"></div>
+            </div>
+
+            <button id="submitBtn" onclick="submitQuiz()" class="w-full py-4 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-pink-500/25 transition">
+                NỘP BÀI & XEM ĐÁP ÁN
+            </button>
+            <button id="resetBtn" onclick="resetQuiz()" class="hidden w-full py-3 bg-slate-800 text-slate-300 font-bold rounded-xl hover:bg-slate-700 transition">
+                LÀM LẠI BÀI
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const questions = [
+            { id: 1, topic: "Chuyển động Brown", title: "Chuyển động của các phân tử chất khí là chuyển động Brown.", ans: "SAI", exp: "Chuyển động Brown là chuyển động hỗn loạn của các HẠT NHỎ (như hạt bụi, hạt phấn hoa) do phân tử chất khí va chạm vào, không phải bản thân phân tử chất khí." },
+            { id: 2, topic: "Nội năng", title: "Khi nhiệt độ của một vật tăng lên thì nội năng của vật chắc chắn tăng.", ans: "SAI", exp: "Nội năng U = ΣWđ + ΣWt phụ thuộc vào Nhiệt độ T và Thể tích V. T tăng làm Wđ tăng nhưng nếu thể tích thay đổi làm Wt giảm mạnh thì chưa thể khẳng định U tăng." },
+            { id: 3, topic: "Nhiệt dung riêng", title: "Nước được dùng làm chất làm mát động cơ vì nhiệt dung riêng của nước nhỏ.", ans: "SAI", exp: "Thực tế nước có nhiệt dung riêng RẤT LỚN (c ≈ 4200 J/kg.K), giúp hấp thụ nhiều nhiệt lượng mà không nóng lên quá nhanh." },
+            { id: 4, topic: "Nội năng và Nhiệt độ", title: "Nếu hai vật có cùng nội năng thì chúng chắc chắn có cùng nhiệt độ.", ans: "SAI", exp: "Nội năng phụ thuộc vào khối lượng, bản chất và thể tích. Hai vật có cùng nội năng U1 = U2 vẫn có thể có nhiệt độ T1 khác T2." },
+            { id: 5, topic: "Chiều truyền nhiệt", title: "Nhiệt luôn truyền từ vật có nội năng lớn hơn sang vật có nội năng nhỏ hơn.", ans: "SAI", exp: "Nhiệt tự truyền TỪ NHIỆT ĐỘ CAO SANG NHIỆT ĐỘ THẤP, hoàn toàn không phụ thuộc vào nội năng." },
+            { id: 6, topic: "Định luật I", title: "Khi hệ thực hiện công ra ngoài, nội năng của hệ chắc chắn giảm.", ans: "SAI", exp: "Theo ΔU = A + Q, khi sinh công (A < 0) hệ đồng thời có thể nhận nhiệt lượng Q lớn hơn, nên nội năng chưa chắc đã giảm." },
+            { id: 7, topic: "Sự sôi", title: "Trong quá trình sôi, sự bay hơi xảy ra ở toàn bộ khối chất lỏng.", ans: "SAI", exp: "Sự sôi là quá trình hoá hơi xảy ra cả ở MẶT THOÁNG và TRONG LÒNG chất lỏng (sự bay hơi chỉ xảy ra ở mặt thoáng)." },
+            { id: 8, topic: "Chuyển thể", title: "Để làm một chất chuyển thể, ta chỉ có cách thay đổi nhiệt độ của chất đó.", ans: "SAI", exp: "Ta có 2 cách: Thay đổi nhiệt độ HOẶC thay đổi áp suất (ví dụ: hoá lỏng gas bằng áp suất cao trong bình)." },
+            { id: 9, topic: "Sự bay hơi", title: "Tốc độ bay hơi của chất lỏng sẽ giảm nếu độ ẩm ngoài môi trường cao.", ans: "ĐÚNG", exp: "Độ ẩm cao nghĩa là không khí đã chứa nhiều hơi nước, khiến chất lỏng bay hơi chậm hơn (ví dụ: ngày nồm ẩm quần áo lâu khô)." },
+            { id: 10, topic: "Nhiệt lượng", title: "Nhiệt lượng là một dạng năng lượng.", ans: "SAI", exp: "Nhiệt lượng KHÔNG PHẢI là một dạng năng lượng, mà là số đo phần nội năng nhận thêm hay mất đi trong quá trình truyền nhiệt." }
+        ];
+
+        const userAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = questions.map((q, idx) => `
+                <div class="glass-box rounded-2xl p-5 space-y-3" id="qcard-${q.id}">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="px-2.5 py-1 bg-pink-500/20 text-pink-400 font-bold rounded-lg">CÂU ${q.id}/10</span>
+                        <span class="text-slate-400 font-medium">${q.topic}</span>
+                    </div>
+                    <p class="font-bold text-sm sm:text-base text-slate-100">${q.title}</p>
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <button onclick="selectAns(${q.id}, 'ĐÚNG')" id="btn-${q.id}-ĐÚNG" class="btn-option py-3 border border-slate-700 bg-slate-900 rounded-xl font-bold text-sm hover:border-pink-500">
+                            ✓ ĐÚNG
+                        </button>
+                        <button onclick="selectAns(${q.id}, 'SAI')" id="btn-${q.id}-SAI" class="btn-option py-3 border border-slate-700 bg-slate-900 rounded-xl font-bold text-sm hover:border-pink-500">
+                            ✕ SAI
+                        </button>
+                    </div>
+                    <div id="exp-${q.id}" class="hidden mt-3 p-3 rounded-xl bg-slate-900/80 border border-slate-700 text-xs text-slate-300 space-y-1">
+                        <span class="font-bold text-pink-400">💡 Lời giải từ Thầy VNA:</span>
+                        <p>${q.exp}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectAns(qId, choice) {
+            userAnswers[qId] = choice;
+            document.getElementById(`btn-${qId}-ĐÚNG`).classList.remove('btn-selected');
+            document.getElementById(`btn-${qId}-SAI`).classList.remove('btn-selected');
+            document.getElementById(`btn-${qId}-${choice}`).classList.add('btn-selected');
+        }
+
+        function submitQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            if (!name) {
+                alert('Vui lòng nhập Họ tên trước khi nộp bài!');
+                document.getElementById('studentName').focus();
+                return;
+            }
+
+            let correct = 0;
+            questions.forEach(q => {
+                const userChoice = userAnswers[q.id];
+                const btnCorrect = document.getElementById(`btn-${q.id}-${q.ans}`);
+                const btnWrong = userChoice && userChoice !== q.ans ? document.getElementById(`btn-${q.id}-${userChoice}`) : null;
+
+                // Disable options
+                document.getElementById(`btn-${q.id}-ĐÚNG`).disabled = true;
+                document.getElementById(`btn-${q.id}-SAI`).disabled = true;
+
+                // Highlight answers
+                btnCorrect.classList.add('btn-correct');
+                if (btnWrong) btnWrong.classList.add('btn-wrong');
+
+                // Show explanation
+                document.getElementById(`exp-${q.id}`).classList.remove('hidden');
+
+                if (userChoice === q.ans) correct++;
+            });
+
+            // Show Result
+            const resultBox = document.getElementById('resultBox');
+            resultBox.classList.remove('hidden');
+            document.getElementById('resultScore').innerText = `${name}: ${correct}/10 CÂU ĐÚNG`;
+            
+            if(correct === 10) {
+                document.getElementById('resultText').innerText = "Xuất sắc! Em đã thuộc lau lau lý thuyết Vật lý Nhiệt!";
+            } else if(correct >= 7) {
+                document.getElementById('resultText').innerText = "Kết quả rất tốt! Hãy đọc kỹ giải thích ở các câu chưa đúng nhé.";
+            } else {
+                document.getElementById('resultText').innerText = "Cần ôn lại lý thuyết kỹ hơn nhé! Đọc lại lời giải bên dưới mỗi câu.";
+            }
+
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('resetBtn').classList.remove('hidden');
+            resultBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetQuiz() {
+            for (let k in userAnswers) delete userAnswers[k];
+            renderQuiz();
+            document.getElementById('resultBox').classList.add('hidden');
+            document.getElementById('submitBtn').classList.remove('hidden');
+            document.getElementById('resetBtn').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        renderQuiz();
+    </script>
+</body>
+</html>
